@@ -6,6 +6,7 @@ from linkedin_scraper import get_user as get_linkedin_user
 import argparse
 import sys
 import json
+import asyncio
 
 # Define color codes
 COLOR_WARNING = Fore.YELLOW
@@ -20,7 +21,7 @@ payload_options_list = ["Login page", "Attachment", "Download Link", "Else"]
 user_options_list = ["Single user", "User list"]
 
 # Define functions
-def main(args=None):
+async def main(args=None):
       print_logo()
       print(f"\n\n{COLOR_WARNING}Welcome to the AI Phishing Toolkit" 
             "\nThis is just a proof of concept and should not be used for malicious purposes\n"
@@ -44,9 +45,9 @@ def main(args=None):
             else:
                   template = templates[args.template]
             if platform_option == "twitter" and mult_option == "single":
-                  twitter_single_user_cli(args.uname, output_index, payload_index, ai_option, template, args.api_key)
+                  await twitter_single_user_cli(args.uname, output_index, payload_index, ai_option, template, args.api_key)
             elif platform_option == "twitter" and mult_option == "list":
-                  twitter_user_list_cli(args.list, output_index, payload_index, ai_option, template, args.api_key)
+                  await twitter_user_list_cli(args.list, output_index, payload_index, ai_option, template, args.api_key)
             elif platform_option == "linkedin" and mult_option == "single":
                   linkedin_single_user_cli(args.uname, output_index, payload_index, ai_option, template, args.api_key)
             elif platform_option == "linkedin" and mult_option == "list":
@@ -59,9 +60,9 @@ def main(args=None):
       platform_option = platform_options()
       mult_option = mult_options()
       if(platform_option == 1 and mult_option == 1):
-            twitter_single_user(ai_option)
+            await twitter_single_user(ai_option)
       elif(platform_option == 1 and mult_option == 2):
-            twitter_user_list(ai_option)
+            await twitter_user_list(ai_option)
       elif(platform_option == 2 and mult_option == 1):
             linkedin_single_user(ai_option)
       elif(platform_option == 2 and mult_option == 2):
@@ -147,10 +148,10 @@ def print_options(options_list):
       for i in range(len(options_list)):
             print(f"{Fore.GREEN}{i+1}. {options_list[i]}{Style.RESET_ALL}")
 
-def twitter_single_user(ai_option):
+async def twitter_single_user(ai_option):
       print("\n\nPlease enter the username of the user you would like to scrape:")
       username = input("\nUsername: ")
-      tweets, userinfo = get_twitter_user(username)
+      tweets, userinfo = await get_twitter_user(username)
       if userinfo == None:
             print(f"{COLOR_ERROR}User not found{Style.RESET_ALL}")
             return twitter_single_user()
@@ -160,10 +161,10 @@ def twitter_single_user(ai_option):
       if ai_option == "OpenAI GPT-4" or ai_option == "OpenAI GPT-3.5":
             print(generate_prompt_twitter_user_chatgpt(userinfo, tweets, generation_option, payload, ai_option, "", template, payload_text))
       elif ai_option == "Llama3 (local)" or ai_option == "Mistral (local)":
-            print(generate_prompt_twitter_user_ollama(userinfo, tweets, generation_option, payload, ai_option, "", template, payload_text))
+            print(generate_prompt_twitter_user_ollama(userinfo, tweets, generation_option, payload, ai_option, template, payload_text))
 
-def twitter_single_user_cli(username, generation, payload, ai_option, template, api_key=""):
-      tweets, userinfo = get_twitter_user(username)
+async def twitter_single_user_cli(username, generation, payload, ai_option, template, api_key=""):
+      tweets, userinfo = await get_twitter_user(username)
       if userinfo == None:
             print(f"{COLOR_ERROR}User not found{Style.RESET_ALL}")
             return
@@ -173,7 +174,7 @@ def twitter_single_user_cli(username, generation, payload, ai_option, template, 
             print(generate_prompt_twitter_user_ollama(userinfo, tweets, generation, payload, ai_option, template, ""))
       sys.exit()
 
-def twitter_user_list(ai_option):
+async def twitter_user_list(ai_option):
       print("\n\nPlease enter the path to the file containing the list of usernames you would like to scrape:")
       file_path = input("\nFile path: ")
       try:
@@ -188,20 +189,20 @@ def twitter_user_list(ai_option):
                   user = user[:-1]
             clean_usernames.append(user)
 
-      tweets, userinfo = get_multiple_twitter_users(clean_usernames)
+      tweets, userinfo = await get_multiple_twitter_users(clean_usernames)
       generation_option = twitter_generation_options()
       payload, payload_text = payload_options()
+      template = template_options()
       if ai_option == "OpenAI GPT-4" or ai_option == "OpenAI GPT-3.5":
             for tweet, user in zip(tweets, userinfo):
                   print(user['username'] + ':')
-                  print(generate_prompt_twitter_user_chatgpt(user, tweet, generation_option, payload, ai_option, "", payload_text))
+                  print(generate_prompt_twitter_user_chatgpt(user, tweet, generation_option, payload, ai_option, "", template, payload_text))
       elif ai_option == "Llama3 (local)" or ai_option == "Mistral (local)":
             for tweet, user in zip(tweets, userinfo):
-                  print(user)
-                  #print(generate_prompt_twitter_user_ollama(user, tweet, generation_option, payload, ai_option, "", payload_text))
-      #TODO: Continue here
+                  print(f"{user['username']}:")
+                  print(generate_prompt_twitter_user_ollama(user, tweet, generation_option, payload, ai_option, "", payload_text))
 
-def twitter_user_list_cli(file_path, generation, payload, ai_option, template, api_key):
+async def twitter_user_list_cli(file_path, generation, payload, ai_option, template, api_key):
       try:
             with open(file_path, 'r') as file:
                   usernames = file.readlines()
@@ -213,17 +214,16 @@ def twitter_user_list_cli(file_path, generation, payload, ai_option, template, a
             if '\n' in user:
                   user = user[:-1]
             clean_usernames.append(user)
-      tweets, userinfo = get_multiple_twitter_users(clean_usernames)
+      tweets, userinfo = await get_multiple_twitter_users(clean_usernames)
       if ai_option == "OpenAI GPT-4" or ai_option == "OpenAI GPT-3.5":
             for tweet, user in zip(tweets, userinfo):
                   print(f"{user['username']}:")
                   print(generate_prompt_twitter_user_chatgpt(user, tweet, generation, payload, ai_option, api_key, template, ""))
       elif ai_option == "Llama3 (local)" or ai_option == "Mistral (local)":
             for tweet, user in zip(tweets, userinfo):
-                  print(user)
-                  #print(generate_prompt_twitter_user_ollama(user, tweet, generation_option, payload, ai_option, "", template, payload_text))
+                  print(f"{user['username']}:")
+                  print(generate_prompt_twitter_user_ollama(user, tweet, generation, payload, ai_option, template, ""))
       sys.exit()
-      #TODO: Continue here
 
 def linkedin_single_user(ai_option):
       print("\n\nPlease enter the user ID of the user you would like to scrape:")
@@ -239,7 +239,7 @@ def linkedin_single_user(ai_option):
       if ai_option == "OpenAI GPT-4" or ai_option == "OpenAI GPT-3.5":
             print(generate_prompt_linkedin_user_chatgpt(profile, posts, generation_option, payload, ai_option, "", template, payload_text))
       elif ai_option == "Llama3 (local)" or ai_option == "Mistral (local)":
-            print(generate_prompt_linkedin_user_ollama(profile, posts, generation_option, payload, ai_option, "", template, payload_text))
+            print(generate_prompt_linkedin_user_ollama(profile, posts, generation_option, payload, ai_option, template, payload_text))
 
 def linkedin_user_list(ai_option):
       print("\n\nPlease enter the path to the file containing the list of usernames you would like to scrape:")
@@ -271,9 +271,11 @@ def linkedin_user_list(ai_option):
       template = template_options()
       for profile, posts in zip(profile_list, posts_list):
             if ai_option == "OpenAI GPT-4" or ai_option == "OpenAI GPT-3.5":
+                  print(f"{user['username']}:")
                   print(generate_prompt_linkedin_user_chatgpt(profile, posts, generation_option, payload, ai_option, "", template, ""))
             elif ai_option == "Llama3 (local)" or ai_option == "Mistral (local)":
-                  print(generate_prompt_linkedin_user_ollama(profile, posts, generation_option, payload, ai_option, "", template, ""))
+                  print(f"{user['username']}:")
+                  print(generate_prompt_linkedin_user_ollama(profile, posts, generation_option, payload, ai_option, template, ""))
 
 def linkedin_single_user_cli(user_id, generation_option, payload, ai_option, template, api_key):
       profile, posts = get_linkedin_user(user_id)
@@ -283,7 +285,7 @@ def linkedin_single_user_cli(user_id, generation_option, payload, ai_option, tem
       if ai_option == "OpenAI GPT-4" or ai_option == "OpenAI GPT-3.5":
             print(generate_prompt_linkedin_user_chatgpt(profile, posts, generation_option, payload, ai_option, api_key, template, ""))
       elif ai_option == "Llama3 (local)" or ai_option == "Mistral (local)":
-            print(generate_prompt_linkedin_user_ollama(profile, posts, generation_option, payload, ai_option, api_key, template, ""))
+            print(generate_prompt_linkedin_user_ollama(profile, posts, generation_option, payload, ai_option, template, ""))
       sys.exit()
 
 def linkedin_user_list_cli(file_path, generation, payload, ai_option, template, api_key):
@@ -314,9 +316,11 @@ def linkedin_user_list_cli(file_path, generation, payload, ai_option, template, 
       template = template_options()
       for profile, posts in zip(profile_list, posts_list):
             if ai_option == "OpenAI GPT-4" or ai_option == "OpenAI GPT-3.5":
+                  print(f"{user['username']}:")
                   print(generate_prompt_linkedin_user_chatgpt(profile, posts, generation_option, payload, ai_option, api_key, template, ""))
             elif ai_option == "Llama3 (local)" or ai_option == "Mistral (local)":
-                  print(generate_prompt_linkedin_user_ollama(profile, posts, generation_option, payload, ai_option, api_key, template, ""))
+                  print(f"{user['username']}:")
+                  print(generate_prompt_linkedin_user_ollama(profile, posts, generation_option, payload, ai_option, template, ""))
 
 def print_logo():
       print("\n\n"
@@ -340,10 +344,10 @@ if __name__ == "__main__":
       parser.add_argument('-api_key', help='API key for the AI service')
       args = parser.parse_args()
       if not any(vars(args).values()):
-            main()
+            asyncio.run(main())
       else:
             if(args.platform and args.ai and args.output and args.payload and (args.list or args.uname)):
                   print(args)
-                  main(args)
+                  asyncio.run(main(args))
             else:
                   parser.print_help()

@@ -35,8 +35,6 @@ def api_call(prompt, api_key, json_file, model="gpt-3.5-turbo"):
             ],
             stream=False
       )
-      #for chunk in response:
-      #      print(chunk.choices[0].delta.content or "", end="")
       response_text = response.choices[0].message.content
 
       timestamp = datetime.now().isoformat()
@@ -83,11 +81,9 @@ def generate_prompt_twitter_user(userinfo, tweets, generation_option, payload_op
             prompt += f"{prompts['general']['template']}\n"
             prompt += f"{template}\n"
       prompt += f"Today is {datetime.now().strftime('%A, %B %d, %Y')}\n"
-      #api_call(prompt, get_api_key(), prompts)
       if api_key == "":
             api_key = get_api_key()
       return api_call(prompt, api_key, prompts)
-      #return prompt
       
 def get_generation_option_twitter(generation_option):
       generation_option = int(generation_option)

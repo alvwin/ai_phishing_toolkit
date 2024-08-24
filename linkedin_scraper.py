@@ -1,5 +1,5 @@
 import getpass
-from linkedin_api import Linkedin # linkedin_api is a custom module to scrape LinkedIn data
+from linkedin_api import Linkedin
 import configparser
 import requests
 
@@ -189,9 +189,7 @@ def extract_post_content(scraped_data):
 
 
 def get_user(link):
-      uname, passwd = load_login_info()
-      #print("Login with credentials is currently not available. Please use cookies to login.")
-      #api = Linkedin(uname, passwd)
+      #uname, passwd = load_login_info()
       cookiejar = requests.cookies.RequestsCookieJar()
       li_at, jsessionid = load_cookies()
       cookiejar.set('li_at', li_at, domain='.linkedin.com', path='/')

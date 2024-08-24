@@ -135,7 +135,7 @@ def api_call(prompt, model="llama3"):
 
       return response_text
 
-def generate_prompt_linkedin_user(profile, posts, generation_option, payload_option, ai_option, api_key, template, payload_text=""):
+def generate_prompt_linkedin_user(profile, posts, generation_option, payload_option, ai_option, template, payload_text=""):
       option = get_generation_option_linkedin(generation_option)
       prompts = get_prompt_json()
       payload = get_payload_option(payload_option, payload_text)

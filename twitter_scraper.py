@@ -2,6 +2,7 @@ from twikit import Client
 import json
 import getpass
 import configparser
+import asyncio
 
 # get Login info from user
 def get_login_info():
@@ -75,7 +76,7 @@ def ask_save_cookie():
             return ask_save_cookie()
 
 # get single user
-def get_user(name):
+async def get_user(name):
       client = Client('en-US')
 
       # try to login with stored cookie
@@ -95,7 +96,7 @@ def get_user(name):
                         save_login_info(username, email, password)
             finally:
                   # save credentials
-                  client.login(
+                  await client.login(
                         auth_info_1 = username,
                         auth_info_2 = email,
                         password = password
@@ -105,21 +106,16 @@ def get_user(name):
       
       # get user info
       try:
-            user = client.get_user_by_screen_name(name)
+            user = await client.get_user_by_screen_name(name)
       except:
             return None, None
       user_id = user.id
-      tweets = client.get_user_tweets(user_id, 'Tweets', 2)
+      tweets = await client.get_user_tweets(user_id, 'Tweets', 2)
       for tweet in tweets:
             if tweet.retweeted_tweet:
                   tweet.full_text = tweet.retweeted_tweet.full_text
       if len(tweets) > 5:
             tweets = tweets[:5]
-      # for tweet in tweets:
-      #       print(tweet.full_text)
-      #       print("---")
-      #       print(tweet.text)
-      #       print("================")
 
       userinfo = {
             'user_id': user_id,
@@ -137,7 +133,7 @@ def get_user(name):
       }
       return tweets, userinfo
 
-def get_multiple_users(userlist):
+async def get_multiple_users(userlist):
       client = Client('en-US')
 
       try:
@@ -153,7 +149,7 @@ def get_multiple_users(userlist):
                   username, email, password = get_login_info()
                   save_login_info(username, email, password)
             finally:
-                  client.login(
+                  await client.login(
                         auth_info_1 = username,
                         auth_info_2 = email,
                         password = password
@@ -164,12 +160,12 @@ def get_multiple_users(userlist):
       userinfolist = []
       for username in userlist:
             try:
-                  user = client.get_user_by_screen_name(username)
+                  user = await client.get_user_by_screen_name(username)
             except:
                   print('User ' + username + ' not found')
                   continue
             user_id = user.id
-            tweets = client.get_user_tweets(user_id, 'Tweets', 2)
+            tweets = await client.get_user_tweets(user_id, 'Tweets', 2)
 
             userinfo = {
                   'user_id': user_id,
