@@ -82,7 +82,7 @@ async def get_user(name):
       # try to login with stored cookie
       try:
             cookie = load_user_cookie()
-            print(client.set_cookies(cookie))
+            #print(client.set_cookies(cookie))
             print("Logged in from the last session")
       except:
             # try to login with stored credentials
@@ -95,14 +95,22 @@ async def get_user(name):
                   if ask_save_credentials():
                         save_login_info(username, email, password)
             finally:
-                  # save credentials
-                  await client.login(
-                        auth_info_1 = username,
-                        auth_info_2 = email,
-                        password = password
-                  )
-                  if ask_save_cookie():
+                  try:
+                        # save credentials
+                        await client.login(
+                              auth_info_1 = username,
+                              auth_info_2 = email,
+                              password = password
+                        )
+                        if ask_save_cookie():
+                              save_user_cookie(client)
+                  except Exception as e:
+                        print("An error occurred: " + str(e))
+                        print("Please try logging in with a cookie")
+                        cookie = input("Enter your cookie: ")
+                        client.set_cookies(json.loads(cookie))
                         save_user_cookie(client)
+
       
       # get user info
       try:
