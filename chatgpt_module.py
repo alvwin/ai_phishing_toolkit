@@ -25,7 +25,7 @@ def get_api_key():
                   config.write(configfile)
       return api_key
 
-def api_call(prompt, api_key, json_file, model="gpt-3.5-turbo"):
+def api_call(prompt, api_key, json_file, model):
       if model == "OpenAI GPT-3.5":
             model = "gpt-3.5-turbo"
       else:
@@ -70,7 +70,7 @@ def generate_prompt_twitter_user(userinfo, tweets, generation_option, payload_op
             print("Invalid generation option")
             return
       if option == "probability":
-            return api_call(generate_twitter_probability(userinfo, prompts, tweets), api_key, ai_option)
+            return api_call(generate_twitter_probability(userinfo, prompts, tweets), api_key, prompts, ai_option)
       prompt += f"{prompts['general']['twitter']}"
       prompt += f"{generate_twitter_user_text(userinfo)}\n"
       prompt += f"{generate_twitter_tweets_text(tweets)}\n"
@@ -91,7 +91,7 @@ def generate_prompt_twitter_user(userinfo, tweets, generation_option, payload_op
       prompt += f"Today is {datetime.now().strftime('%A, %B %d, %Y')}\n"
       if api_key == "":
             api_key = get_api_key()
-      return api_call(prompt, api_key, prompts)
+      return api_call(prompt, api_key, prompts, ai_option)
       
 def get_generation_option_twitter(generation_option):
       generation_option = int(generation_option)
@@ -169,7 +169,7 @@ def generate_prompt_linkedin_user(profile, posts, generation_option, payload_opt
             print("Invalid generation option")
             return
       if option == "probability":
-            return api_call(generate_linkedin_probability(profile, posts, prompts), api_key, ai_option)
+            return api_call(generate_linkedin_probability(profile, posts, prompts), api_key, prompts, ai_option)
       prompt += f"{prompts['general']['linkedin']}"
       prompt += f"{generate_linkedin_profile_text(profile)}\n"
       prompt += f"{generate_linkedin_posts_text(posts)}\n"
@@ -190,7 +190,7 @@ def generate_prompt_linkedin_user(profile, posts, generation_option, payload_opt
       prompt += f"Today is {datetime.now().strftime('%A, %B %d, %Y')}\n"
       if api_key == "":
             api_key = get_api_key()
-      return api_call(prompt, api_key, prompts)
+      return api_call(prompt, api_key, prompts, ai_option)
 
 def generate_linkedin_profile_text(profile):
       profile_text = "Here is some useful information about the user:\n"
