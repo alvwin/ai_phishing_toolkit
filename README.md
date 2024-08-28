@@ -53,6 +53,7 @@ Follow instructions
 
 ### Batch mode
 Run the program with flags
+
 Example:
 ```
 python console_program.py -ai "OpenAI GPT-3.5" -platform LinkedIn -uname user-name -output SMS -payload "Download Link" -api_key [OpenAI api key]
