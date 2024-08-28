@@ -14,7 +14,7 @@ COLOR_ERROR = Fore.RED
 
 # Define options
 platform_options_list = ["Twitter", "LinkedIn"]
-ai_options_list = ["OpenAI GPT-3.5", "OpenAI GPT-4", "Mistral (local)", "Llama3 (local)"]
+ai_options_list = ["OpenAI GPT-3.5", "OpenAI GPT-4o", "Mistral (local)", "Llama3 (local)"]
 generation_options_list_twitter = ["Email", "SMS", "Vishing script", "Twitter DM", "Twitter post", "Twitter reply", "Pretext"]
 generation_options_list_linkedin = ["Email", "SMS", "Vishing script", "Pretext"]
 payload_options_list = ["Login page", "Attachment", "Download Link", "Else"]
@@ -158,7 +158,7 @@ async def twitter_single_user(ai_option):
       generation_option = twitter_generation_options()
       payload, payload_text = payload_options()
       template = template_options()
-      if ai_option == "OpenAI GPT-4" or ai_option == "OpenAI GPT-3.5":
+      if ai_option == "OpenAI GPT-4o" or ai_option == "OpenAI GPT-3.5":
             print(generate_prompt_twitter_user_chatgpt(userinfo, tweets, generation_option, payload, ai_option, "", template, payload_text))
       elif ai_option == "Llama3 (local)" or ai_option == "Mistral (local)":
             print(generate_prompt_twitter_user_ollama(userinfo, tweets, generation_option, payload, ai_option, template, payload_text))
@@ -168,7 +168,7 @@ async def twitter_single_user_cli(username, generation, payload, ai_option, temp
       if userinfo == None:
             print(f"{COLOR_ERROR}User not found{Style.RESET_ALL}")
             return
-      if ai_option == "OpenAI GPT-4" or ai_option == "OpenAI GPT-3.5":
+      if ai_option == "OpenAI GPT-4o" or ai_option == "OpenAI GPT-3.5":
             print(generate_prompt_twitter_user_chatgpt(userinfo, tweets, generation, payload, ai_option, api_key, template, ""))
       elif ai_option == "Llama3 (local)" or ai_option == "Mistral (local)":
             print(generate_prompt_twitter_user_ollama(userinfo, tweets, generation, payload, ai_option, template, ""))
@@ -193,7 +193,7 @@ async def twitter_user_list(ai_option):
       generation_option = twitter_generation_options()
       payload, payload_text = payload_options()
       template = template_options()
-      if ai_option == "OpenAI GPT-4" or ai_option == "OpenAI GPT-3.5":
+      if ai_option == "OpenAI GPT-4o" or ai_option == "OpenAI GPT-3.5":
             for tweet, user in zip(tweets, userinfo):
                   print(user['username'] + ':')
                   print(generate_prompt_twitter_user_chatgpt(user, tweet, generation_option, payload, ai_option, "", template, payload_text))
@@ -215,7 +215,7 @@ async def twitter_user_list_cli(file_path, generation, payload, ai_option, templ
                   user = user[:-1]
             clean_usernames.append(user)
       tweets, userinfo = await get_multiple_twitter_users(clean_usernames)
-      if ai_option == "OpenAI GPT-4" or ai_option == "OpenAI GPT-3.5":
+      if ai_option == "OpenAI GPT-4o" or ai_option == "OpenAI GPT-3.5":
             for tweet, user in zip(tweets, userinfo):
                   print(f"{user['username']}:")
                   print(generate_prompt_twitter_user_chatgpt(user, tweet, generation, payload, ai_option, api_key, template, ""))
@@ -236,7 +236,7 @@ def linkedin_single_user(ai_option):
       generation_option = linkedin_generation_options()
       payload, payload_text = payload_options()
       template = template_options()
-      if ai_option == "OpenAI GPT-4" or ai_option == "OpenAI GPT-3.5":
+      if ai_option == "OpenAI GPT-4o" or ai_option == "OpenAI GPT-3.5":
             print(generate_prompt_linkedin_user_chatgpt(profile, posts, generation_option, payload, ai_option, "", template, payload_text))
       elif ai_option == "Llama3 (local)" or ai_option == "Mistral (local)":
             print(generate_prompt_linkedin_user_ollama(profile, posts, generation_option, payload, ai_option, template, payload_text))
@@ -270,7 +270,7 @@ def linkedin_user_list(ai_option):
       payload = payload_options()
       template = template_options()
       for profile, posts in zip(profile_list, posts_list):
-            if ai_option == "OpenAI GPT-4" or ai_option == "OpenAI GPT-3.5":
+            if ai_option == "OpenAI GPT-4o" or ai_option == "OpenAI GPT-3.5":
                   print(f"{user['username']}:")
                   print(generate_prompt_linkedin_user_chatgpt(profile, posts, generation_option, payload, ai_option, "", template, ""))
             elif ai_option == "Llama3 (local)" or ai_option == "Mistral (local)":
@@ -282,7 +282,7 @@ def linkedin_single_user_cli(user_id, generation_option, payload, ai_option, tem
       if profile == None:
             print(f"{COLOR_ERROR}User not found{Style.RESET_ALL}")
             return
-      if ai_option == "OpenAI GPT-4" or ai_option == "OpenAI GPT-3.5":
+      if ai_option == "OpenAI GPT-4o" or ai_option == "OpenAI GPT-3.5":
             print(generate_prompt_linkedin_user_chatgpt(profile, posts, generation_option, payload, ai_option, api_key, template, ""))
       elif ai_option == "Llama3 (local)" or ai_option == "Mistral (local)":
             print(generate_prompt_linkedin_user_ollama(profile, posts, generation_option, payload, ai_option, template, ""))
@@ -315,7 +315,7 @@ def linkedin_user_list_cli(file_path, generation, payload, ai_option, template, 
       payload = payload_options()
       template = template_options()
       for profile, posts in zip(profile_list, posts_list):
-            if ai_option == "OpenAI GPT-4" or ai_option == "OpenAI GPT-3.5":
+            if ai_option == "OpenAI GPT-4o" or ai_option == "OpenAI GPT-3.5":
                   print(f"{user['username']}:")
                   print(generate_prompt_linkedin_user_chatgpt(profile, posts, generation_option, payload, ai_option, api_key, template, ""))
             elif ai_option == "Llama3 (local)" or ai_option == "Mistral (local)":

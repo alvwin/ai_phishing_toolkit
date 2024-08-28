@@ -26,32 +26,40 @@ def get_api_key():
       return api_key
 
 def api_call(prompt, api_key, json_file, model="gpt-3.5-turbo"):
-      client = OpenAI(api_key=api_key)
-      response = client.chat.completions.create(
-            model = model,
-            messages = [
-                  {"role": json_file["api_call"][0]['role'], "content": json_file["api_call"][0]['content']},
-                  {"role": "user", "content": prompt}
-            ],
-            stream=False
-      )
-      response_text = response.choices[0].message.content
-
-      timestamp = datetime.now().isoformat()
-      new_entry = {
-            "time": timestamp,
-            "prompt": prompt,
-            "response": response_text
-      }
-      if os.path.exists(HISTORY_PATH):
-            with open(HISTORY_PATH, 'r') as history_file:
-                  history_data = json.load(history_file)
+      if model == "OpenAI GPT-3.5":
+            model = "gpt-3.5-turbo"
       else:
-            history_data = []
-      history_data.append(new_entry)
-      with open(HISTORY_PATH, 'w') as history_file:
-            json.dump(history_data, history_file, indent=4)
-      return response_text
+            model = "gpt-4o-latest"
+      client = OpenAI(api_key=api_key)
+      try:
+            response = client.chat.completions.create(
+                  model = model,
+                  messages = [
+                        {"role": json_file["api_call"][0]['role'], "content": json_file["api_call"][0]['content']},
+                        {"role": "user", "content": prompt}
+                  ],
+                  stream=False
+            )
+            response_text = response.choices[0].message.content
+
+            timestamp = datetime.now().isoformat()
+            new_entry = {
+                  "time": timestamp,
+                  "prompt": prompt,
+                  "response": response_text
+            }
+            if os.path.exists(HISTORY_PATH):
+                  with open(HISTORY_PATH, 'r') as history_file:
+                        history_data = json.load(history_file)
+            else:
+                  history_data = []
+            history_data.append(new_entry)
+            with open(HISTORY_PATH, 'w') as history_file:
+                  json.dump(history_data, history_file, indent=4)
+            return response_text
+      except Exception as e:
+            print(f"An error occurred: {e}")
+            return
 
 def generate_prompt_twitter_user(userinfo, tweets, generation_option, payload_option, ai_option, api_key, template, payload_text=""):
       option = get_generation_option_twitter(generation_option)
@@ -62,7 +70,7 @@ def generate_prompt_twitter_user(userinfo, tweets, generation_option, payload_op
             print("Invalid generation option")
             return
       if option == "probability":
-            return api_call(generate_twitter_probability(userinfo, prompts, tweets), api_key, prompts)
+            return api_call(generate_twitter_probability(userinfo, prompts, tweets), api_key, ai_option)
       prompt += f"{prompts['general']['twitter']}"
       prompt += f"{generate_twitter_user_text(userinfo)}\n"
       prompt += f"{generate_twitter_tweets_text(tweets)}\n"
@@ -161,7 +169,7 @@ def generate_prompt_linkedin_user(profile, posts, generation_option, payload_opt
             print("Invalid generation option")
             return
       if option == "probability":
-            return api_call(generate_linkedin_probability(profile, posts, prompts), api_key, prompts)
+            return api_call(generate_linkedin_probability(profile, posts, prompts), api_key, ai_option)
       prompt += f"{prompts['general']['linkedin']}"
       prompt += f"{generate_linkedin_profile_text(profile)}\n"
       prompt += f"{generate_linkedin_posts_text(posts)}\n"
