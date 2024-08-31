@@ -2,6 +2,9 @@
 # AI Phishing Toolkit
 This is a proof of concept to demonstrate the AI generation of targeted phishing emails by scraping social media profiles.
 
+## Educational Software Disclaimer
+This software is intended for educational purposes only. The creators and contributors assume no responsibility for its use. By using this software, you acknowledge that all risks and consequences arising from its application are your responsibility.
+
 ## Installation (Windows)
 1. Install [python](https://www.python.org/downloads/) and [pip](https://pip.pypa.io/en/stable/installation/)
 2. clone the repository and enter the folder
