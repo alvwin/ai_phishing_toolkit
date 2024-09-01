@@ -8,6 +8,9 @@ import sys
 import json
 import asyncio
 
+from SocialService.SocialRender import SocialRender
+from const import Const
+
 # Define color codes
 COLOR_WARNING = Fore.YELLOW
 COLOR_ERROR = Fore.RED
@@ -44,14 +47,13 @@ async def main(args=None):
                   print(f"{COLOR_ERROR}Invalid template name{Style.RESET_ALL}")
             else:
                   template = templates[args.template]
-            if platform_option == "twitter" and mult_option == "single":
-                  await twitter_single_user_cli(args.uname, output_index, payload_index, ai_option, template, args.api_key)
-            elif platform_option == "twitter" and mult_option == "list":
-                  await twitter_user_list_cli(args.list, output_index, payload_index, ai_option, template, args.api_key)
-            elif platform_option == "linkedin" and mult_option == "single":
-                  linkedin_single_user_cli(args.uname, output_index, payload_index, ai_option, template, args.api_key)
-            elif platform_option == "linkedin" and mult_option == "list":
-                  linkedin_user_list_cli()
+
+            social = SocialRender(platform_option)
+
+            if mult_option == "single":
+                  await social.single_user_cli(args.uname, output_index, payload_index, ai_option, template, args.api_key)
+            elif mult_option == "list":
+                  await social.user_list_cli(args.list, output_index, payload_index, ai_option, template, args.api_key)
             else:
                   print(f"{COLOR_ERROR}Invalid option{Style.RESET_ALL}")
 
@@ -59,14 +61,15 @@ async def main(args=None):
 
       platform_option = platform_options()
       mult_option = mult_options()
-      if(platform_option == 1 and mult_option == 1):
-            await twitter_single_user(ai_option)
-      elif(platform_option == 1 and mult_option == 2):
-            await twitter_user_list(ai_option)
-      elif(platform_option == 2 and mult_option == 1):
-            linkedin_single_user(ai_option)
-      elif(platform_option == 2 and mult_option == 2):
-            linkedin_user_list(ai_option)
+
+      print(Const.platform_options_list[platform_option - 1])
+
+      social = SocialRender(Const.platform_options_list[platform_option - 1])
+
+      if(mult_option == 1):
+            await social.service.single_user(ai_option)
+      elif(mult_option == 2):
+            await social.service.user_list(ai_option)
 
 def ai_options():
       print("\n\nPlease select what AI to use:")
