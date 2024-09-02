@@ -53,7 +53,7 @@ class TwitterService(SocialService):
         tweets, userinfo = await self._get_user(username)
         if userinfo == None:
                 print(f"{Const.COLOR_ERROR}User not found{Const.RESET_ALL}")
-                return self.single_user()
+                return await self.single_user(ai)
         generation_option = self._twitter_generation_options()
         payload, payload_text = self._payload_options()
         template = self._template_options()
@@ -125,6 +125,34 @@ class TwitterService(SocialService):
                     cookie = input("Enter your cookie: ")
                     client.set_cookies(json.loads(cookie))
                     self._save_user_cookie(client)
+        
+        try:
+            user = await client.get_user_by_screen_name(name)
+        except:
+            return None, None
+        user_id = user.id
+        tweets = await client.get_user_tweets(user_id, 'Tweets', 2)
+        for tweet in tweets:
+            if tweet.retweeted_tweet:
+                tweet.full_text = tweet.retweeted_tweet.full_text
+        if len(tweets) > 5:
+            tweets = tweets[:5]
+
+        userinfo = {
+            'user_id': user_id,
+            'username': name,
+            'location': user.location,
+            'description': user.description,
+            'can_dm': user.can_dm,
+            'followers_count': user.followers_count,
+            'following_count': user.following_count,
+            'favourites_count': user.favourites_count,
+            'listed_count': user.listed_count,
+            'statuses_count': user.statuses_count,
+            'media_count': user.media_count,
+            'created_at': user.created_at
+        }
+        return tweets, userinfo
 
     def _load_user_cookie(self):
         config = configparser.ConfigParser(interpolation=None)
@@ -280,7 +308,3 @@ class TwitterService(SocialService):
                 print(f"{Const.COLOR_ERROR}Invalid template name{Const.RESET_ALL}")
             else:
                 return templates[template_name]
-            
-
-
-
