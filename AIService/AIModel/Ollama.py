@@ -4,7 +4,7 @@ import ollama
 from datetime import datetime
 
 from ..AIService import AIService
-from const import Const
+from Util.Const import Const
 
 class Ollama(AIService):
     def __init__(self) -> None:

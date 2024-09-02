@@ -1,7 +1,7 @@
 from abc import abstractmethod
 import json
 
-from const import Const
+from Util.Const import Const
 
 class AIService:
     def __init__(self) -> None:

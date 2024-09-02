@@ -5,7 +5,7 @@ import configparser
 import getpass
 
 from ..AIService import AIService
-from const import Const
+from Util.Const import Const
 
 class OpenAI(AIService):
     def __init__(self) -> None:

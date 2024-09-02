@@ -1,33 +1,10 @@
 from abc import abstractmethod
-from colorama import Fore
 
-from const import Const
+from Util.Const import Const
 
 class SocialService:
     def __init__(self) -> None:
         pass
-
-    # ! --------------------------------------------------------------------------------
-    # ! Private
-    # ! --------------------------------------------------------------------------------
-
-    def _print_options(self, options_list: list):
-        for i in range(len(options_list)):
-            print(f"{Fore.GREEN}{i+1}. {options_list[i]}{Const.RESET_ALL}")
-
-    def _get_valid_input(self, size: int):
-        bottom = 1
-        top = size
-        input_value = input("\nOption: ")
-        try:
-            input_value = int(input_value)
-        except ValueError:
-            print(f"{Const.COLOR_ERROR}Invalid option{Const.RESET_ALL}")
-            return self._get_valid_input(size)
-        if input_value < bottom or input_value > top:
-            print(f"{Const.COLOR_ERROR}Invalid option{Const.RESET_ALL}")
-            input_value = self._get_valid_input(size)
-        return input_value
 
     # ! --------------------------------------------------------------------------------
     # ! Abstract

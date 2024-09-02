@@ -5,7 +5,8 @@ import json
 import getpass
 
 from SocialService.SocialService import SocialService
-from const import Const
+from Util.Const import Const
+from Util.Helper import Helper
 from AIService.AIRender import AIRender
 
 class TwitterService(SocialService):
@@ -246,15 +247,15 @@ class TwitterService(SocialService):
 
     def _twitter_generation_options(self):
         print("\n\nPlease select what to generate:")
-        self._print_options(Const.generation_options_list_twitter)
-        generation_option = self._get_valid_input(len(Const.generation_options_list_twitter))
+        Helper.print_options(Const.generation_options_list_twitter)
+        generation_option = Helper.get_valid_input(len(Const.generation_options_list_twitter))
         return generation_option
     
     def _payload_options(self):
         payload_option_text = ""
         print("\n\nPlease select a type of payload:")
-        self._print_options(Const.payload_options_list)
-        payload_option = self._get_valid_input(len(Const.payload_options_list))
+        Helper.print_options(Const.payload_options_list)
+        payload_option = Helper.get_valid_input(len(Const.payload_options_list))
         if payload_option == 4:
                 payload_option_text = input("\Please specify the type of payload: ")
         return payload_option, payload_option_text
@@ -274,7 +275,7 @@ class TwitterService(SocialService):
             template_name = input("\nTemplate name: ")
             if template_name == "?":
                 print("\n\nAvailable templates:")
-                self._print_options(template_names)
+                Helper.print_options(template_names)
             elif template_name not in template_names:
                 print(f"{Const.COLOR_ERROR}Invalid template name{Const.RESET_ALL}")
             else:
