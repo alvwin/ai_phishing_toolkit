@@ -4,13 +4,13 @@ from linkedin_api import Linkedin
 import sys
 import json
 
-from SocialService import SocialService
+from SocialService.SocialService import SocialService
 from const import Const
-from AIService.AIService import AIService
+from AIService.AIRender import AIRender
 
 class LinkedinService(SocialService):
     def __init__(self) -> None:
-        pass
+        super().__init__()
 
     async def single_user_cli(self, username: str, output: str, payload: str, ai: str, template: str, api_key: str = ""):
         profile, posts = self._get_user(username)
@@ -18,7 +18,7 @@ class LinkedinService(SocialService):
             print(f"{Const.COLOR_ERROR}User not found{Const.RESET_ALL}")
             return
         
-        Ai = AIService(ai)
+        Ai = AIRender(ai).model
 
         print(Ai.generate_prompt_linkedin(profile, posts, output, payload, ai, template, api_key=api_key))
         sys.exit()
@@ -50,7 +50,7 @@ class LinkedinService(SocialService):
         payload = self._payload_options()
         template = self._template_options()
 
-        Ai = AIService(ai)
+        Ai = AIRender(ai).model
 
         for profile, posts in zip(profile_list, posts_list):
             print(f"{user['username']}:")
@@ -68,7 +68,7 @@ class LinkedinService(SocialService):
         payload, payload_text = self._payload_options()
         template = self._template_options()
 
-        Ai = AIService(ai)
+        Ai = AIRender(ai).model
 
         print(Ai.generate_prompt_linkedin(profile, posts, generation_option, payload, ai, template, payload_text, api_key=""))
 
@@ -101,7 +101,7 @@ class LinkedinService(SocialService):
         payload = self._payload_options()
         template = self._template_options()
 
-        Ai = AIService(ai)
+        Ai = AIRender(ai).model
 
         for profile, posts in zip(profile_list, posts_list):
             print(f"{user['username']}:")

@@ -48,7 +48,7 @@ async def main(args=None):
             else:
                   template = templates[args.template]
 
-            social = SocialRender(platform_option)
+            social = SocialRender(Const.platform_options_list[platform_option - 1]).service
 
             if mult_option == "single":
                   await social.single_user_cli(args.uname, output_index, payload_index, ai_option, template, args.api_key)
@@ -62,14 +62,12 @@ async def main(args=None):
       platform_option = platform_options()
       mult_option = mult_options()
 
-      print(Const.platform_options_list[platform_option - 1])
-
-      social = SocialRender(Const.platform_options_list[platform_option - 1])
+      social = SocialRender(Const.platform_options_list[platform_option - 1]).service
 
       if(mult_option == 1):
-            await social.service.single_user(ai_option)
+            await social.single_user(ai_option)
       elif(mult_option == 2):
-            await social.service.user_list(ai_option)
+            await social.user_list(ai_option)
 
 def ai_options():
       print("\n\nPlease select what AI to use:")

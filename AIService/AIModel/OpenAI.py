@@ -9,7 +9,7 @@ from const import Const
 
 class OpenAI(AIService):
     def __init__(self) -> None:
-        pass
+        super().__init__()
 
     def generate_prompt_linkedin(self, profile: str, posts: str, generation_option: str, payload_option: str, ai_option: str, template: str, payload_text: str = "", **kwargs):
         option = self._get_generation_option_linkedin(generation_option)
@@ -43,7 +43,7 @@ class OpenAI(AIService):
                 api_key = self._get_api_key()
         return self._api_call(prompt, api_key, prompts, ai_option)
     
-    def generate_prompt_twitter(self, profile: str, posts: str, generation_option: str, payload_option: str, ai_option: str, template: str, payload_text: str = ""):
+    def generate_prompt_twitter(self, profile: str, posts: str, generation_option: str, payload_option: str, ai_option: str, template: str, payload_text: str = "", **kwargs):
         option = self._get_generation_option_twitter(generation_option)
         prompts = self._get_prompt_json()
         payload = self._get_payload_option(payload_option, payload_text)
@@ -129,3 +129,5 @@ class OpenAI(AIService):
             with open('config.ini', 'w') as configfile:
                 config.write(configfile)
         return api_key
+    
+    

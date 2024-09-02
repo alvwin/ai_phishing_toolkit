@@ -4,11 +4,8 @@ import json
 from const import Const
 
 class AIService:
-    def __init__(self, model: str) -> None:
-        if model.lower() == "OpenAI GPT-4o" or model.lower() == "OpenAI GPT-3.5":
-            return ...
-        elif model.lower() == "Llama3 (local)" or model.lower() == "Mistral (local)":
-            return
+    def __init__(self) -> None:
+        pass
         
     # ! --------------------------------------------------------------------------------
     # ! Private

@@ -8,9 +8,9 @@ from const import Const
 
 class Ollama(AIService):
     def __init__(self) -> None:
-        pass
+        super().__init__()
 
-    def generate_prompt_linkedin(self, profile: str, posts: str, generation_option: str, payload_option: str, ai_option: str, template: str, payload_text: str = ""):
+    def generate_prompt_linkedin(self, profile: str, posts: str, generation_option: str, payload_option: str, ai_option: str, template: str, payload_text: str = "", **kwargs):
         option = self._get_generation_option_linkedin(generation_option)
         prompts = self._get_prompt_json()
         payload = self._get_payload_option(payload_option)
@@ -45,7 +45,7 @@ class Ollama(AIService):
         prompt += f"Today is {datetime.now().strftime('%A, %B %d, %Y')}\n"
         return self._api_call(prompt, ai_option_c)
     
-    def generate_prompt_twitter(self, profile: str, posts: str, generation_option: str, payload_option: str, ai_option: str, template: str, payload_text: str = ""):
+    def generate_prompt_twitter(self, profile: str, posts: str, generation_option: str, payload_option: str, ai_option: str, template: str, payload_text: str = "", **kwargs):
         option = self._get_generation_option_twitter(generation_option)
         prompts = self._get_prompt_json()
         payload = self._get_payload_option(payload_option, payload_text)

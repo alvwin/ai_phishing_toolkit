@@ -4,9 +4,9 @@ import configparser
 import json
 import getpass
 
-from SocialService import SocialService
+from SocialService.SocialService import SocialService
 from const import Const
-from AIService.AIService import AIService
+from AIService.AIRender import AIRender
 
 class TwitterService(SocialService):
     def __init__(self) -> None:
@@ -18,7 +18,7 @@ class TwitterService(SocialService):
                 print(f"{Const.COLOR_ERROR}User not found{Const.RESET_ALL}")
                 return
         
-        Ai = AIService(ai)
+        Ai = AIRender(ai).model
 
         print(Ai.generate_prompt_twitter(userinfo, tweets, output, payload, ai, api_key, template, ""))
         
@@ -38,7 +38,7 @@ class TwitterService(SocialService):
                 clean_usernames.append(user)
         tweets, userinfo = await self._get_multiple_twitter_users(clean_usernames)
 
-        Ai = AIService(ai)
+        Ai = AIRender(ai).model
 
         for tweet, user in zip(tweets, userinfo):
             print(f"{user['username']}:")
@@ -57,7 +57,7 @@ class TwitterService(SocialService):
         payload, payload_text = self._payload_options()
         template = self._template_options()
 
-        Ai = AIService(ai)
+        Ai = AIRender(ai).model
 
         print(Ai.generate_prompt_twitter(userinfo, tweets, generation_option, payload, ai, template, payload_text, api_key=""))
 
@@ -81,7 +81,7 @@ class TwitterService(SocialService):
         payload, payload_text = self._payload_options()
         template = self._template_options()
 
-        Ai = AIService(ai)
+        Ai = AIRender(ai).model
 
         for tweet, user in zip(tweets, userinfo):
             print(user['username'] + ':')

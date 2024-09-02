@@ -1,4 +1,5 @@
 from abc import abstractmethod
+from colorama import Fore
 
 from const import Const
 
@@ -12,7 +13,7 @@ class SocialService:
 
     def _print_options(self, options_list: list):
         for i in range(len(options_list)):
-            print(f"{Const.GREEN}{i+1}. {options_list[i]}{Const.RESET_ALL}")
+            print(f"{Fore.GREEN}{i+1}. {options_list[i]}{Const.RESET_ALL}")
 
     def _get_valid_input(self, size: int):
         bottom = 1
