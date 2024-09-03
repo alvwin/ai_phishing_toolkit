@@ -82,6 +82,24 @@ def print_logo():
       f"{Style.RESET_ALL}")
 
 if __name__ == "__main__":
+
+      from linkedin_api import Linkedin
+      import requests
+
+      from SocialService.Social.LinkedinService import LinkedinService
+
+      li = LinkedinService()
+
+      cookiejar = requests.cookies.RequestsCookieJar()
+      li_at, jsessionid = li._load_cookies()
+      cookiejar.set('li_at', li_at, domain='.linkedin.com', path='/')
+      cookiejar.set('JSESSIONID', jsessionid, domain='.linkedin.com', path='/')
+      api = Linkedin('', '', cookies=cookiejar)
+      company = api.get_company("fratellibonfanti")
+      posts = api.get_company_updates("fratellibonfanti", None, 5)
+
+      li._extract_post_content_company(posts)
+
       parser = argparse.ArgumentParser(description="AI Phishing Toolkit")
       parser.add_argument('-ai', choices=Const.ai_options_list, help='Select AI to use')
       parser.add_argument('-platform', choices=Const.platform_options_list, help='Select platform to scrape user data from')

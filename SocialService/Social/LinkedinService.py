@@ -108,11 +108,22 @@ class LinkedinService(SocialService):
             print(f"{user['username']}:")
             print(Ai.generate_prompt_linkedin(profile, posts, generation_option, payload, ai, template, api_key=""))
 
+    async def single_company_cli(self, company: str, output: str, payload: str, ai: str, template: str, api_key: str = ""):
+        profile, posts = self._get_company(company)
+        if profile == None:
+            print(f"{Const.COLOR_ERROR}User not found{Const.RESET_ALL}")
+            return
+        
+        Ai = AIRender(ai).model
+
+        print(Ai.generate_prompt_linkedin(profile, posts, output, payload, ai, template, api_key=api_key))
+        sys.exit()
+
     # ! --------------------------------------------------------------------------------
     # ! PRIVATE
     # ! --------------------------------------------------------------------------------
 
-    def _get_user(self, link):
+    def _get_user(self, link: str):
         cookiejar = requests.cookies.RequestsCookieJar()
         li_at, jsessionid = self._load_cookies()
         cookiejar.set('li_at', li_at, domain='.linkedin.com', path='/')
@@ -244,7 +255,6 @@ class LinkedinService(SocialService):
 
         # Extract industry
         industry = profile_data.get('industryName', '')
-
         # Extract certifications
         certifications = []
         for cert in profile_data.get('certifications', []):
@@ -271,6 +281,9 @@ class LinkedinService(SocialService):
     
     def _extract_post_content(self, scraped_data):
         post_contents = []
+
+        with open('.json', 'w') as f:
+            json.dump(scraped_data, f)
 
         # Iterate through each post in the scraped data
         for actor in scraped_data:
@@ -322,3 +335,65 @@ class LinkedinService(SocialService):
             else:
                 return templates[template_name]
 
+    def _parse_company(self, company: dict):
+
+        name = company.get('name', '')
+        tagline = company.get('tagline', '')
+        description = company.get('description', '')
+
+        # Extract location
+        location = company.get('confirmedLocations', [])[0].get('geographicArea', '')
+
+        # Extract industry
+        industry = company.get('companyIndustries', [])
+
+        if len(industry) == 1:
+            industry = company.get('companyIndustries', [])[0].get('localizedName', '')
+        else:
+            result = []
+            for topic in industry:
+                topic_name = topic.get('localizedName', '')
+                result.append({
+                    topic_name
+                })
+            industry = result
+
+        return {
+            'first_name': name,
+            'tagline': tagline,
+            'description': description,
+            'location': location,
+            'industry': industry,
+        }
+
+    def _extract_post_content_company(self, scraped_data):
+        post_contents = []
+
+        # Iterate through each post in the scraped data
+        for actor in scraped_data:
+            if not actor['value']['com.linkedin.voyager.feed.render.UpdateV2']['commentary']['text']['text']: continue
+            # Navigate to the content of the post
+            commentary = actor.get('commentary', {})
+            text_wrap = commentary.get('text', {})
+            text = text_wrap.get('text', '')
+
+            # Add the text content to the list if it exists
+            if text:
+                post_contents.append(text)
+
+        print(post_contents)
+        return post_contents
+
+    def _company_readable(self, company: dict, updates: list):
+        pass
+
+    def _get_company(self, link: str):
+        cookiejar = requests.cookies.RequestsCookieJar()
+        li_at, jsessionid = self._load_cookies()
+        cookiejar.set('li_at', li_at, domain='.linkedin.com', path='/')
+        cookiejar.set('JSESSIONID', jsessionid, domain='.linkedin.com', path='/')
+        api = Linkedin('', '', cookies=cookiejar)
+        profile = api.get_company(link)
+        posts = api.get_profile_posts(link, None, 5)
+
+        return self._company_readable(self._parse_company(profile), self._extract_post_content_company(posts))
