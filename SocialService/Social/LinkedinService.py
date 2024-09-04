@@ -359,7 +359,7 @@ class LinkedinService(SocialService):
             industry = result
 
         return {
-            'first_name': name,
+            'name': name,
             'tagline': tagline,
             'description': description,
             'location': location,
@@ -383,7 +383,6 @@ class LinkedinService(SocialService):
             if text:
                 post_contents.append(text)
 
-        print(post_contents)
         return post_contents
 
     def _company_readable(self, company: dict, updates: list):
@@ -415,6 +414,6 @@ class LinkedinService(SocialService):
         cookiejar.set('JSESSIONID', jsessionid, domain='.linkedin.com', path='/')
         api = Linkedin('', '', cookies=cookiejar)
         profile = api.get_company(link)
-        posts = api.get_profile_posts(link, None, 5)
+        posts = api.get_company_updates(link, None, 5)
 
         return self._company_readable(self._parse_company(profile), self._extract_post_content_company(posts))

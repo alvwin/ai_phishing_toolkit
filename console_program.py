@@ -31,7 +31,7 @@ async def main(args=None):
             else:
                   template = templates[args.template]
 
-            social = SocialRender(Const.platform_options_list[platform_option - 1]).service
+            social = SocialRender(platform_option).service
 
             if mult_option == "single":
                   await social.single_user_cli(args.uname, output_index, payload_index, ai_option, template, args.api_key)
@@ -80,30 +80,23 @@ def print_logo():
       f"\n        \/                     \/        \/     \/        \//_____/                                   \/         "
       f"{Const.RESET_ALL}")
 
+# async def gog():
+#       from SocialService.Social.LinkedinService import LinkedinService
+
+#       li = LinkedinService()
+
+#       await li.single_company_cli("fratellibonfanti", 1, 1, "Llama3 (local)", "")
+
 if __name__ == "__main__":
 
-      # from linkedin_api import Linkedin
-      # import requests
-
-      # from SocialService.Social.LinkedinService import LinkedinService
-
-      # li = LinkedinService()
-
-      # cookiejar = requests.cookies.RequestsCookieJar()
-      # li_at, jsessionid = li._load_cookies()
-      # cookiejar.set('li_at', li_at, domain='.linkedin.com', path='/')
-      # cookiejar.set('JSESSIONID', jsessionid, domain='.linkedin.com', path='/')
-      # api = Linkedin('', '', cookies=cookiejar)
-      # company = api.get_company("fratellibonfanti")
-      # posts = api.get_company_updates("fratellibonfanti", None, 5)
-
-      # li._extract_post_content_company(posts)
+      # asyncio.run(gog())
 
       parser = argparse.ArgumentParser(description="AI Phishing Toolkit")
       parser.add_argument('-ai', choices=Const.ai_options_list, help='Select AI to use')
       parser.add_argument('-platform', choices=Const.platform_options_list, help='Select platform to scrape user data from')
       parser.add_argument('-list', help='Target multiple users (provide file path with username list)')
       parser.add_argument('-uname', help='Username of the single user to scrape')
+      parser.add_argument('-company', help='Company of the single company to scrape')
       parser.add_argument('-output', choices=Const.generation_options_list_twitter, help='Specify what to generate')
       parser.add_argument('-payload', choices=Const.payload_options_list, help='Specify type of payload')
       parser.add_argument('-template', help='Specify a template to use', default=False)
@@ -112,7 +105,7 @@ if __name__ == "__main__":
       if not any(vars(args).values()):
             asyncio.run(main())
       else:
-            if(args.platform and args.ai and args.output and args.payload and (args.list or args.uname)):
+            if(args.platform and args.ai and args.output and args.payload and (args.list or args.uname or args.company)):
                   print(args)
                   asyncio.run(main(args))
             else:
