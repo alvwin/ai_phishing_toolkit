@@ -1,4 +1,3 @@
-from colorama import Fore, Style
 import argparse
 import json
 import asyncio
@@ -73,32 +72,32 @@ def mult_options():
 
 def print_logo():
       print("\n\n"
-      f"{Fore.CYAN}   _____   ___  __________ __     __        __     __                 ___________            __   __    __  __   "
+      f"{Const.COLOR_CYAN}   _____   ___  __________ __     __        __     __                 ___________            __   __    __  __   "
       f"\n  /  _  \ |   | \______   \  |__ |__| _____|  |__ |__| ____    ____   \__    ___/___   ____ |  | |  | _|__|/  |_ "
       f"\n /  /_\  \|   |  |     ___/  |  \|  |/  ___/  |  \|  |/    \  / ___\    |    | /  _ \ /  _ \|  | |  |/ /  \   __\\"
       f"\n/    |    \   |  |    |   |   Y  \  |\___ \|   Y  \  |   |  \/ /_/  >   |    |(  <_> |  <_> )  |_|    <|  ||  |  "
       f"\n\____|__  /___|  |____|   |___|  /__/____  >___|  /__|___|  /\___  /    |____| \____/ \____/|____/__|_ \__||__|  "
       f"\n        \/                     \/        \/     \/        \//_____/                                   \/         "
-      f"{Style.RESET_ALL}")
+      f"{Const.RESET_ALL}")
 
 if __name__ == "__main__":
 
-      from linkedin_api import Linkedin
-      import requests
+      # from linkedin_api import Linkedin
+      # import requests
 
-      from SocialService.Social.LinkedinService import LinkedinService
+      # from SocialService.Social.LinkedinService import LinkedinService
 
-      li = LinkedinService()
+      # li = LinkedinService()
 
-      cookiejar = requests.cookies.RequestsCookieJar()
-      li_at, jsessionid = li._load_cookies()
-      cookiejar.set('li_at', li_at, domain='.linkedin.com', path='/')
-      cookiejar.set('JSESSIONID', jsessionid, domain='.linkedin.com', path='/')
-      api = Linkedin('', '', cookies=cookiejar)
-      company = api.get_company("fratellibonfanti")
-      posts = api.get_company_updates("fratellibonfanti", None, 5)
+      # cookiejar = requests.cookies.RequestsCookieJar()
+      # li_at, jsessionid = li._load_cookies()
+      # cookiejar.set('li_at', li_at, domain='.linkedin.com', path='/')
+      # cookiejar.set('JSESSIONID', jsessionid, domain='.linkedin.com', path='/')
+      # api = Linkedin('', '', cookies=cookiejar)
+      # company = api.get_company("fratellibonfanti")
+      # posts = api.get_company_updates("fratellibonfanti", None, 5)
 
-      li._extract_post_content_company(posts)
+      # li._extract_post_content_company(posts)
 
       parser = argparse.ArgumentParser(description="AI Phishing Toolkit")
       parser.add_argument('-ai', choices=Const.ai_options_list, help='Select AI to use')

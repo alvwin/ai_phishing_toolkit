@@ -4,6 +4,7 @@ class Const:
     COLOR_WARNING = Fore.YELLOW
     COLOR_ERROR = Fore.RED
     COLOR_GREEN = Fore.GREEN
+    COLOR_CYAN = Fore.CYAN
 
     RESET_ALL = Style.RESET_ALL
 

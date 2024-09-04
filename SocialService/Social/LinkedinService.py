@@ -372,8 +372,10 @@ class LinkedinService(SocialService):
         # Iterate through each post in the scraped data
         for actor in scraped_data:
             if not actor['value']['com.linkedin.voyager.feed.render.UpdateV2']['commentary']['text']['text']: continue
+
+            used = actor['value']['com.linkedin.voyager.feed.render.UpdateV2']
             # Navigate to the content of the post
-            commentary = actor.get('commentary', {})
+            commentary = used.get('commentary', {})
             text_wrap = commentary.get('text', {})
             text = text_wrap.get('text', '')
 
@@ -385,7 +387,26 @@ class LinkedinService(SocialService):
         return post_contents
 
     def _company_readable(self, company: dict, updates: list):
-        pass
+        name = company['name']
+        tagline = company['tagline']
+        desc = company['description']
+
+        name = f"{name}\n{tagline}\n{desc}"
+
+        # Formatting location
+        location = company['location']
+        location_text = f"Location: {location}\n"
+
+        # Formatting industry
+        industry = company['industry']
+        industry_text = f"Industry: {industry}\n"
+
+        posts = updates
+        posts_text = "Posts by the company:\n"
+        for i, content in enumerate(posts, 1):
+            posts_text += f"Post {i}: \n{content}\n----------------\n"
+
+        return f"Name: {name}\n{location_text}\n{industry_text}\n", posts_text
 
     def _get_company(self, link: str):
         cookiejar = requests.cookies.RequestsCookieJar()
