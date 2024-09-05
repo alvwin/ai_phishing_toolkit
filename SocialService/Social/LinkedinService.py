@@ -359,9 +359,6 @@ class LinkedinService(SocialService):
     def _extract_post_content(self, scraped_data):
         post_contents = []
 
-        with open('.json', 'w') as f:
-            json.dump(scraped_data, f)
-
         # Iterate through each post in the scraped data
         for actor in scraped_data:
             # Navigate to the content of the post
