@@ -16,8 +16,8 @@ class AIService:
             prompt = json.load(file)
         return prompt
     
-    def _get_payload_option(self, payload_option: str):
-        payload_option = int(payload_option)
+    def _get_payload_option(self, payload_option: tuple | str):
+        payload_option = int(payload_option[0] if type(payload_option) == tuple else payload_option)
         if payload_option == 1:
             return "login_link"
         elif payload_option == 2:

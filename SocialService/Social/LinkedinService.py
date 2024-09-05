@@ -146,6 +146,56 @@ class LinkedinService(SocialService):
             print(f"{companies[i].title()}:")
             print(Ai.generate_prompt_linkedin(profile, update, output, payload, ai, template, api_key=api_key))
 
+    async def single_company(self, ai: str):
+        print("\n\nPlease enter the user ID of the user you would like to scrape:")
+        print("(the user ID is in the URL of the user's profile like this: https://www.linkedin.com/company/user-id/)")
+        user_id = input("\Company ID: ")
+        company, updates = self._get_company(user_id)
+        if company == None:
+            print(f"{Const.COLOR_ERROR}Company not found{Const.RESET_ALL}")
+            return self.single_company()
+        generation_option = self._linkedin_generation_options()
+        payload, payload_text = self._payload_options()
+        template = self._template_options()
+
+        Ai = AIRender(ai).model
+
+        print(Ai.generate_prompt_linkedin(company, updates, generation_option, payload, ai, template, payload_text, api_key=""))
+
+    async def company_list(self, ai: str):
+        print("\n\nPlease enter the path to the file containing the list of usernames you would like to scrape:")
+        file_path = input("\nFile path: ")
+        try:
+            with open(file_path, 'r') as file:
+                company = file.readlines()
+        except:
+            print(f"{Const.COLOR_ERROR}File not found{Const.RESET_ALL}")
+            return self.user_list(ai)
+        clean_usernames = []
+        for user in company:
+            if '\n' in user:
+                user = user[:-1]
+            clean_usernames.append(user)
+        profile_list = []
+        posts_list = []
+        for user_id in clean_usernames:
+            company, updates = self._get_company(user_id)
+            if company == None:
+                print(f"{Const.COLOR_ERROR}User {user_id} not found{Const.RESET_ALL}")
+                profile_list.append(None)
+                posts_list.append(None)
+                continue
+            profile_list.append(company)
+            posts_list.append(updates)
+        generation_option = self._linkedin_generation_options()
+        payload = self._payload_options()
+        template = self._template_options()
+
+        Ai = AIRender(ai).model
+
+        for i, (profile, posts) in enumerate(zip(profile_list, posts_list)):
+            print(f"{company.title()}:")
+            print(Ai.generate_prompt_linkedin(profile, posts, generation_option, payload, ai, template, api_key=""))
     # ! --------------------------------------------------------------------------------
     # ! PRIVATE
     # ! --------------------------------------------------------------------------------
@@ -339,7 +389,7 @@ class LinkedinService(SocialService):
         payload_option = Helper.get_valid_input(len(Const.payload_options_list))
         if payload_option == 4:
             payload_option_text = input("\Please specify the type of payload: ")
-        return payload_option, payload_option_text
+        return payload_option, payload_option_text if payload_option_text else payload_option
     
     def _template_options(self):
         template_option = input("\n\nDo you want to use a template? (y/n) ")

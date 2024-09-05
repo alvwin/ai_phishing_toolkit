@@ -17,3 +17,4 @@ class Const:
     generation_options_list_linkedin = ["Email", "SMS", "Vishing script", "Pretext"]
     payload_options_list = ["Login page", "Attachment", "Download Link", "Else"]
     user_options_list = ["Single user", "User list"]
+    account_type_options_list = ["User", "Company"]
