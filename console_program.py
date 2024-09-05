@@ -16,7 +16,7 @@ async def main(args=None):
       if args:
             ai_option = args.ai
             platform_option = args.platform
-            mult_option = "list" if args.list else "single"
+            mult_option = "list" if args.list or args.list_company else "single"
             platform_option = platform_option.lower()
             mult_option = mult_option.lower()
             output_index = Const.generation_options_list_twitter.index(args.output) + 1
@@ -32,13 +32,19 @@ async def main(args=None):
                   template = templates[args.template]
 
             social = SocialRender(platform_option).service
-
             if mult_option == "single":
                   await social.single_user_cli(args.uname, output_index, payload_index, ai_option, template, args.api_key)
             elif mult_option == "list":
-                  await social.user_list_cli(args.list, output_index, payload_index, ai_option, template, args.api_key)
+                  if platform_option.lower() != "linkedin":
+                        await social.user_list_cli(args.list, output_index, payload_index, ai_option, template, args.api_key)
+                  else:
+                        if args.list_company:
+                              await social.company_list_cli(args.list_company, output_index, payload_index, ai_option, template, args.api_key)
+                        else:
+                              await social.user_list_cli(args.list, output_index, payload_index, ai_option, template, args.api_key)
             else:
                   print(f"{Const.COLOR_ERROR}Invalid option{Const.RESET_ALL}")
+            return
 
       ai_option = Const.ai_options_list[ai_options()-1]
 
@@ -95,6 +101,7 @@ if __name__ == "__main__":
       parser.add_argument('-ai', choices=Const.ai_options_list, help='Select AI to use')
       parser.add_argument('-platform', choices=Const.platform_options_list, help='Select platform to scrape user data from')
       parser.add_argument('-list', help='Target multiple users (provide file path with username list)')
+      parser.add_argument('-list-company', help='Target multiple company (provide file path with companies list)')
       parser.add_argument('-uname', help='Username of the single user to scrape')
       parser.add_argument('-company', help='Company of the single company to scrape')
       parser.add_argument('-output', choices=Const.generation_options_list_twitter, help='Specify what to generate')
@@ -105,7 +112,7 @@ if __name__ == "__main__":
       if not any(vars(args).values()):
             asyncio.run(main())
       else:
-            if(args.platform and args.ai and args.output and args.payload and (args.list or args.uname or args.company)):
+            if(args.platform and args.ai and args.output and args.payload and (args.list or args.uname or args.company or args.list_company)):
                   print(args)
                   asyncio.run(main(args))
             else:

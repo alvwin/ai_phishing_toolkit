@@ -47,15 +47,12 @@ class LinkedinService(SocialService):
                 continue
             profile_list.append(profile)
             posts_list.append(posts)
-        generation_option = self._linkedin_generation_options()
-        payload = self._payload_options()
-        template = self._template_options()
 
         Ai = AIRender(ai).model
 
         for profile, posts in zip(profile_list, posts_list):
             print(f"{user['username']}:")
-            print(Ai.generate_prompt_linkedin(profile, posts, generation_option, payload, ai, template, api_key=api_key))
+            print(Ai.generate_prompt_linkedin(profile, posts, output, payload, ai, template, api_key=api_key))
 
     async def single_user(self, ai: str):
         print("\n\nPlease enter the user ID of the user you would like to scrape:")
@@ -118,6 +115,36 @@ class LinkedinService(SocialService):
 
         print(Ai.generate_prompt_linkedin(profile, posts, output, payload, ai, template, api_key=api_key))
         sys.exit()
+
+    async def company_list_cli(self, file_path: str, output: str, payload: str, ai: str, template: str, api_key: str = ""):
+        try:
+            with open(file_path, 'r') as file:
+                companies = file.readlines()
+        except:
+            print(f"{Const.COLOR_ERROR}File not found{Const.RESET_ALL}")
+            return
+        clean_companies= []
+        for company in companies:
+            if '\n' in company:
+                company = company[:-1]
+            clean_companies.append(company)
+        profile_list = []
+        updates_list = []
+        for comp_id in clean_companies:
+            profile, updates = self._get_company(comp_id)
+            if profile == None:
+                print(f"{Const.COLOR_ERROR}User {comp_id} not found{Const.RESET_ALL}")
+                profile_list.append(None)
+                updates_list.append(None)
+                continue
+            profile_list.append(profile)
+            updates_list.append(updates)
+
+        Ai = AIRender(ai).model
+
+        for i, (profile, update) in enumerate(zip(profile_list, updates_list)):
+            print(f"{companies[i].title()}:")
+            print(Ai.generate_prompt_linkedin(profile, update, output, payload, ai, template, api_key=api_key))
 
     # ! --------------------------------------------------------------------------------
     # ! PRIVATE
