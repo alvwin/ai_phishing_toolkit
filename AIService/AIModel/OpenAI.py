@@ -5,6 +5,7 @@ import configparser
 import getpass
 
 from ..AIService import AIService
+from openai import OpenAI as OpenAIClient
 from Util.Const import Const
 
 class OpenAI(AIService):
@@ -39,8 +40,7 @@ class OpenAI(AIService):
                 prompt += f"{prompts['general']['template']}\n"
                 prompt += f"{template}\n"
         prompt += f"Today is {datetime.now().strftime('%A, %B %d, %Y')}\n"
-        if api_key == "":
-                api_key = self._get_api_key()
+        api_key = self._get_api_key()
         return self._api_call(prompt, api_key, prompts, ai_option)
     
     def generate_prompt_twitter(self, profile: str, posts: str, generation_option: str, payload_option: str, ai_option: str, template: str, payload_text: str = "", **kwargs):
@@ -71,8 +71,7 @@ class OpenAI(AIService):
                 prompt += f"{prompts['general']['template']}\n"
                 prompt += f"{template}\n"
         prompt += f"Today is {datetime.now().strftime('%A, %B %d, %Y')}\n"
-        if api_key == "":
-                api_key = self._get_api_key()
+        api_key = self._get_api_key()
         return self._api_call(prompt, api_key, prompts, ai_option)
     # ! --------------------------------------------------------------------------------
     # ! PRIVATE
@@ -82,7 +81,7 @@ class OpenAI(AIService):
             model = "gpt-3.5-turbo"
         else:
             model = "gpt-4o-latest"
-        client = OpenAI(api_key=api_key)
+        client = OpenAIClient(api_key=api_key)
         try:
             response = client.chat.completions.create(
                 model = model,
@@ -129,5 +128,3 @@ class OpenAI(AIService):
             with open('config.ini', 'w') as configfile:
                 config.write(configfile)
         return api_key
-    
-    
