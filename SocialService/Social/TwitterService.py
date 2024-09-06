@@ -15,7 +15,7 @@ class TwitterService(SocialService):
 
     async def single_user_cli(self, username: str, output: str, payload: str, ai: str, template: str, api_key: str = ""):
         tweets, userinfo = await self._get_user(username)
-        if userinfo == None:
+        if userinfo is None:
                 print(f"{Const.COLOR_ERROR}User not found{Const.RESET_ALL}")
                 return
         
@@ -29,7 +29,7 @@ class TwitterService(SocialService):
         try:
             with open(file_path, 'r') as file:
                 usernames = file.readlines()
-        except:
+        except Exception:
             print(f"{Const.COLOR_ERROR}File not found{Const.RESET_ALL}")
             return
         clean_usernames = []
@@ -51,7 +51,7 @@ class TwitterService(SocialService):
         print("\n\nPlease enter the username of the user you would like to scrape:")
         username = input("\nUsername: ")
         tweets, userinfo = await self._get_user(username)
-        if userinfo == None:
+        if userinfo is None:
                 print(f"{Const.COLOR_ERROR}User not found{Const.RESET_ALL}")
                 return await self.single_user(ai)
         generation_option = self._twitter_generation_options()
@@ -68,7 +68,7 @@ class TwitterService(SocialService):
         try:
             with open(file_path, 'r') as file:
                 usernames = file.readlines()
-        except:
+        except Exception:
             print(f"{Const.COLOR_ERROR}File not found{Const.RESET_ALL}")
             return self.user_list(ai)
         clean_usernames = []
@@ -99,12 +99,12 @@ class TwitterService(SocialService):
             cookie = self._load_user_cookie()
             #print(client.set_cookies(cookie))
             print("Logged in from the last session")
-        except:
+        except Exception:
             # try to login with stored credentials
             try:
                 username, email, password = self._load_login_info()
                 print("Logged in with stored credentials")
-            except:
+            except Exception:
                 print("No login info found. Please enter your login info:")
                 username, email, password = self._get_login_info()
                 if self._ask_save_credentials():
@@ -128,7 +128,7 @@ class TwitterService(SocialService):
         
         try:
             user = await client.get_user_by_screen_name(name)
-        except:
+        except Exception:
             return None, None
         user_id = user.id
         tweets = await client.get_user_tweets(user_id, 'Tweets', 2)
@@ -227,11 +227,11 @@ class TwitterService(SocialService):
             cookie = self._load_user_cookie()
             client.set_cookies(cookie)
             print("Logged in from the last session")
-        except:
+        except Exception:
             try:
                 username, email, password = self._load_login_info()
                 print("Logged in with stored credentials")
-            except:
+            except Exception:
                 print("No login info found. Please enter your login info:")
                 username, email, password = self._get_login_info()
                 self._save_login_info(username, email, password)
