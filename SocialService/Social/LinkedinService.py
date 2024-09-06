@@ -15,7 +15,7 @@ class LinkedinService(SocialService):
 
     async def single_user_cli(self, username: str, output: str, payload: str, ai: str, template: str, api_key: str = ""):
         profile, posts = self._get_user(username)
-        if profile == None:
+        if profile is None:
             print(f"{Const.COLOR_ERROR}User not found{Const.RESET_ALL}")
             return
         
@@ -28,7 +28,7 @@ class LinkedinService(SocialService):
         try:
             with open(file_path, 'r') as file:
                 usernames = file.readlines()
-        except:
+        except Exception:
             print(f"{Const.COLOR_ERROR}File not found{Const.RESET_ALL}")
             return
         clean_usernames = []
@@ -40,7 +40,7 @@ class LinkedinService(SocialService):
         posts_list = []
         for user_id in clean_usernames:
             profile, posts = self._get_user(user_id)
-            if profile == None:
+            if profile is None:
                 print(f"{Const.COLOR_ERROR}User {user_id} not found{Const.RESET_ALL}")
                 profile_list.append(None)
                 posts_list.append(None)
@@ -59,7 +59,7 @@ class LinkedinService(SocialService):
         print("(the user ID is in the URL of the user's profile like this: https://www.linkedin.com/in/user-id/)")
         user_id = input("\nUser ID: ")
         profile, posts = self._get_user(user_id)
-        if profile == None:
+        if profile is None:
             print(f"{Const.COLOR_ERROR}User not found{Const.RESET_ALL}")
             return self.single_user()
         generation_option = self._linkedin_generation_options()
@@ -76,7 +76,7 @@ class LinkedinService(SocialService):
         try:
                 with open(file_path, 'r') as file:
                     usernames = file.readlines()
-        except:
+        except Exception:
                 print(f"{Const.COLOR_ERROR}File not found{Const.RESET_ALL}")
                 return self.user_list(ai)
         clean_usernames = []
@@ -88,7 +88,7 @@ class LinkedinService(SocialService):
         posts_list = []
         for user_id in clean_usernames:
                 profile, posts = self._get_user(user_id)
-                if profile == None:
+                if profile is None:
                     print(f"{Const.COLOR_ERROR}User {user_id} not found{Const.RESET_ALL}")
                     profile_list.append(None)
                     posts_list.append(None)
@@ -105,22 +105,22 @@ class LinkedinService(SocialService):
             print(f"{user['username']}:")
             print(Ai.generate_prompt_linkedin(profile, posts, generation_option, payload, ai, template, api_key=""))
 
-    async def single_company_cli(self, company: str, output: str, payload: str, ai: str, template: str, api_key: str = ""):
-        profile, posts = self._get_company(company)
-        if profile == None:
-            print(f"{Const.COLOR_ERROR}User not found{Const.RESET_ALL}")
+    async def single_company_cli(self, company_input: str, output: str, payload: str, ai: str, template: str, api_key: str = ""):
+        company, updates = self._get_company(company_input)
+        if company is None:
+            print(f"{Const.COLOR_ERROR}Company not found{Const.RESET_ALL}")
             return
         
         Ai = AIRender(ai).model
 
-        print(Ai.generate_prompt_linkedin(profile, posts, output, payload, ai, template, api_key=api_key))
+        print(Ai.generate_prompt_linkedin(company, updates, output, payload, ai, template, api_key=api_key))
         sys.exit()
 
     async def company_list_cli(self, file_path: str, output: str, payload: str, ai: str, template: str, api_key: str = ""):
         try:
             with open(file_path, 'r') as file:
                 companies = file.readlines()
-        except:
+        except Exception:
             print(f"{Const.COLOR_ERROR}File not found{Const.RESET_ALL}")
             return
         clean_companies= []
@@ -132,8 +132,8 @@ class LinkedinService(SocialService):
         updates_list = []
         for comp_id in clean_companies:
             profile, updates = self._get_company(comp_id)
-            if profile == None:
-                print(f"{Const.COLOR_ERROR}User {comp_id} not found{Const.RESET_ALL}")
+            if profile is None:
+                print(f"{Const.COLOR_ERROR}Company {comp_id} not found{Const.RESET_ALL}")
                 profile_list.append(None)
                 updates_list.append(None)
                 continue
@@ -142,16 +142,16 @@ class LinkedinService(SocialService):
 
         Ai = AIRender(ai).model
 
-        for i, (profile, update) in enumerate(zip(profile_list, updates_list)):
-            print(f"{companies[i].title()}:")
+        for profile, update in zip(profile_list, updates_list):
+            print(profile.split("\n")[0])
             print(Ai.generate_prompt_linkedin(profile, update, output, payload, ai, template, api_key=api_key))
 
     async def single_company(self, ai: str):
         print("\n\nPlease enter the company ID of the company you would like to scrape:")
         print("(the company ID is in the URL of the company's profile like this: https://www.linkedin.com/company/company-id/)")
-        user_id = input("\nCompany ID: ")
-        company, updates = self._get_company(user_id)
-        if company == None:
+        company_id = input("\nCompany ID: ")
+        company, updates = self._get_company(company_id)
+        if company is None:
             print(f"{Const.COLOR_ERROR}Company not found{Const.RESET_ALL}")
             return self.single_company()
         generation_option = self._linkedin_generation_options()
@@ -167,20 +167,20 @@ class LinkedinService(SocialService):
         file_path = input("\nFile path: ")
         try:
             with open(file_path, 'r') as file:
-                company = file.readlines()
-        except:
+                companies = file.readlines()
+        except Exception:
             print(f"{Const.COLOR_ERROR}File not found{Const.RESET_ALL}")
-            return self.user_list(ai)
-        clean_companies = []
-        for user in company:
-            if '\n' in user:
-                user = user[:-1]
-            clean_companies.append(user)
+            return self.company_list(ai)
+        clean_company_ids = []
+        for company in companies:
+            if '\n' in company:
+                company = company[:-1]
+            clean_company_ids.append(company)
         company_list = []
         updates_list = []
-        for company_id in clean_companies:
+        for company_id in clean_company_ids:
             company, updates = self._get_company(company_id)
-            if company == None:
+            if company is None:
                 print(f"{Const.COLOR_ERROR}Company {company_id} not found{Const.RESET_ALL}")
                 company_list.append(None)
                 updates_list.append(None)
@@ -193,8 +193,8 @@ class LinkedinService(SocialService):
 
         Ai = AIRender(ai).model
 
-        for i, (profile, posts) in enumerate(zip(company_list, updates_list)):
-            print(f"{company.title()}:")
+        for (profile, posts) in zip(company_list, updates_list):
+            print(profile.split("\n")[0])
             print(Ai.generate_prompt_linkedin(profile, posts, generation_option, payload, ai, template, api_key=""))
     # ! --------------------------------------------------------------------------------
     # ! PRIVATE

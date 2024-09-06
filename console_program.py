@@ -24,7 +24,7 @@ async def main(args=None):
             with open ('templates.json', 'r') as file:
                   templates = json.load(file)
             template_names = list(templates.keys())
-            if args.template == None or args.template == False or args.template == "":
+            if args.template is None or args.template == False or args.template == "":
                   template = False
             elif args.template != None or args.template not in template_names:
                   print(f"{Const.COLOR_ERROR}Invalid template name{Const.RESET_ALL}")
