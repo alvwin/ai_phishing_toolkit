@@ -248,7 +248,7 @@ class TwitterService(SocialService):
         for username in userlist:
             try:
                 user = await client.get_user_by_screen_name(username)
-            except:
+            except Exception:
                 print('User ' + username + ' not found')
                 continue
             user_id = user.id
