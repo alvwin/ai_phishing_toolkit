@@ -46,18 +46,18 @@ async def main(args=None):
                   print(f"{Const.COLOR_ERROR}Invalid option{Const.RESET_ALL}")
             return
 
-      ai_option = Const.ai_options_list[ai_options()-1]
+      ai_option = Const.ai_options_list[selection_options(Const.ai_options_list)-1]
 
-      platform_option = platform_options()
+      platform_option = selection_options(Const.platform_options_list)
       account_type = None
       if platform_option == 2:
-            account_type = account_type_options()
+            account_type = selection_options(Const.account_type_options_list)
            
       if account_type == 1: 
-            mult_option = mult_options(Const.user_options_list)
+            mult_option = selection_options(Const.user_options_list)
       elif account_type == 2:
-            mult_option = mult_options(Const.company_options_list)
-      else: mult_option = mult_options(Const.user_options_list)
+            mult_option = selection_options(Const.company_options_list)
+      else: mult_option = selection_options(Const.user_options_list)
             
       social = SocialRender(Const.platform_options_list[platform_option - 1]).service
 
@@ -73,29 +73,10 @@ async def main(args=None):
       elif(mult_option == 2):
             await social.user_list(ai_option)
 
-def ai_options():
-      print("\n\nPlease select what AI to use:")
-      Helper.print_options(Const.ai_options_list)
-      ai_option = Helper.get_valid_input(len(Const.ai_options_list))
-      return ai_option
-
-def platform_options():
-      print("\n\nPlease select a platform to scrape the user data from:")
-      Helper.print_options(Const.platform_options_list)
-      platform_option = Helper.get_valid_input(len(Const.platform_options_list))
-      return platform_option
-
-def mult_options(options: list):
+def selection_options(options: list):
       print("\n\nPlease select an option:")
       Helper.print_options(options)
-      mult_option = Helper.get_valid_input(len(options))
-      return mult_option
-
-def account_type_options():
-      print("\n\nPlease select an option:")
-      Helper.print_options(Const.account_type_options_list)
-      account_type_option = Helper.get_valid_input(len(Const.account_type_options_list))
-      return account_type_option
+      return Helper.get_valid_input(len(options))
 
 def print_logo():
       print("\n\n"
@@ -107,16 +88,7 @@ def print_logo():
       f"\n        \/                     \/        \/     \/        \//_____/                                   \/         "
       f"{Const.RESET_ALL}")
 
-# async def gog():
-#       from SocialService.Social.LinkedinService import LinkedinService
-
-#       li = LinkedinService()
-
-#       await li.single_company_cli("fratellibonfanti", 1, 1, "Llama3 (local)", "")
-
 if __name__ == "__main__":
-
-      # asyncio.run(gog())
 
       parser = argparse.ArgumentParser(description="AI Phishing Toolkit")
       parser.add_argument('-ai', choices=Const.ai_options_list, help='Select AI to use')
