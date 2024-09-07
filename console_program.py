@@ -49,10 +49,16 @@ async def main(args=None):
       ai_option = Const.ai_options_list[ai_options()-1]
 
       platform_option = platform_options()
+      account_type = None
       if platform_option == 2:
             account_type = account_type_options()
-      mult_option = mult_options()
-
+           
+      if account_type == 1: 
+            mult_option = mult_options(Const.user_options_list)
+      elif account_type == 2:
+            mult_option = mult_options(Const.company_options_list)
+      else: mult_option = mult_options(Const.user_options_list)
+            
       social = SocialRender(Const.platform_options_list[platform_option - 1]).service
 
       if account_type == 2:
@@ -79,10 +85,10 @@ def platform_options():
       platform_option = Helper.get_valid_input(len(Const.platform_options_list))
       return platform_option
 
-def mult_options():
+def mult_options(options: list):
       print("\n\nPlease select an option:")
-      Helper.print_options(Const.user_options_list)
-      mult_option = Helper.get_valid_input(len(Const.user_options_list))
+      Helper.print_options(options)
+      mult_option = Helper.get_valid_input(len(options))
       return mult_option
 
 def account_type_options():

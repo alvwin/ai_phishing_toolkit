@@ -150,10 +150,11 @@ class LinkedinService(SocialService):
         print("\n\nPlease enter the company ID of the company you would like to scrape:")
         print("(the company ID is in the URL of the company's profile like this: https://www.linkedin.com/company/company-id/)")
         company_id = input("\nCompany ID: ")
-        company, updates = self._get_company(company_id)
-        if company is None:
+        try:
+            company, updates = self._get_company(company_id)
+        except Exception:
             print(f"{Const.COLOR_ERROR}Company not found{Const.RESET_ALL}")
-            return self.single_company()
+            return await self.single_company(ai)
         generation_option = self._linkedin_generation_options()
         payload, payload_text = self._payload_options()
         template = self._template_options()
