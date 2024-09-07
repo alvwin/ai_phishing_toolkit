@@ -16,8 +16,8 @@ class AIService:
             prompt = json.load(file)
         return prompt
     
-    def _get_payload_option(self, payload_option: str):
-        payload_option = int(payload_option)
+    def _get_payload_option(self, payload_option: tuple | str):
+        payload_option = int(payload_option[0] if type(payload_option) == tuple else payload_option)
         if payload_option == 1:
             return "login_link"
         elif payload_option == 2:
@@ -56,7 +56,7 @@ class AIService:
 
     def _generate_linkedin_posts_text(self, posts: str):
         posts_text = "Here are the user's most recent posts:\n"
-        if posts == None:
+        if posts is None:
             posts_text += "The user has not posted anything yet\n"
         else:
             posts_text += posts
@@ -106,7 +106,7 @@ class AIService:
 
     def _generate_twitter_tweets_text(self, tweets):
         tweets_text = "Here are the user's most recent tweets:\n"
-        if tweets == None:
+        if tweets is None:
             tweets_text += "The user has not tweeted anything yet\n"
         else:
             for tweet in tweets:

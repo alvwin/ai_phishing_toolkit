@@ -15,7 +15,7 @@ class LinkedinService(SocialService):
 
     async def single_user_cli(self, username: str, output: str, payload: str, ai: str, template: str, api_key: str = ""):
         profile, posts = self._get_user(username)
-        if profile == None:
+        if profile is None:
             print(f"{Const.COLOR_ERROR}User not found{Const.RESET_ALL}")
             return
         
@@ -28,7 +28,7 @@ class LinkedinService(SocialService):
         try:
             with open(file_path, 'r') as file:
                 usernames = file.readlines()
-        except:
+        except Exception:
             print(f"{Const.COLOR_ERROR}File not found{Const.RESET_ALL}")
             return
         clean_usernames = []
@@ -40,29 +40,26 @@ class LinkedinService(SocialService):
         posts_list = []
         for user_id in clean_usernames:
             profile, posts = self._get_user(user_id)
-            if profile == None:
+            if profile is None:
                 print(f"{Const.COLOR_ERROR}User {user_id} not found{Const.RESET_ALL}")
                 profile_list.append(None)
                 posts_list.append(None)
                 continue
             profile_list.append(profile)
             posts_list.append(posts)
-        generation_option = self._linkedin_generation_options()
-        payload = self._payload_options()
-        template = self._template_options()
 
         Ai = AIRender(ai).model
 
         for profile, posts in zip(profile_list, posts_list):
             print(f"{user['username']}:")
-            print(Ai.generate_prompt_linkedin(profile, posts, generation_option, payload, ai, template, api_key=api_key))
+            print(Ai.generate_prompt_linkedin(profile, posts, output, payload, ai, template, api_key=api_key))
 
     async def single_user(self, ai: str):
         print("\n\nPlease enter the user ID of the user you would like to scrape:")
         print("(the user ID is in the URL of the user's profile like this: https://www.linkedin.com/in/user-id/)")
         user_id = input("\nUser ID: ")
         profile, posts = self._get_user(user_id)
-        if profile == None:
+        if profile is None:
             print(f"{Const.COLOR_ERROR}User not found{Const.RESET_ALL}")
             return self.single_user()
         generation_option = self._linkedin_generation_options()
@@ -79,7 +76,7 @@ class LinkedinService(SocialService):
         try:
                 with open(file_path, 'r') as file:
                     usernames = file.readlines()
-        except:
+        except Exception:
                 print(f"{Const.COLOR_ERROR}File not found{Const.RESET_ALL}")
                 return self.user_list(ai)
         clean_usernames = []
@@ -91,7 +88,7 @@ class LinkedinService(SocialService):
         posts_list = []
         for user_id in clean_usernames:
                 profile, posts = self._get_user(user_id)
-                if profile == None:
+                if profile is None:
                     print(f"{Const.COLOR_ERROR}User {user_id} not found{Const.RESET_ALL}")
                     profile_list.append(None)
                     posts_list.append(None)
@@ -108,11 +105,103 @@ class LinkedinService(SocialService):
             print(f"{user['username']}:")
             print(Ai.generate_prompt_linkedin(profile, posts, generation_option, payload, ai, template, api_key=""))
 
+    async def single_company_cli(self, company_input: str, output: str, payload: str, ai: str, template: str, api_key: str = ""):
+        company, updates = self._get_company(company_input)
+        if company is None:
+            print(f"{Const.COLOR_ERROR}Company not found{Const.RESET_ALL}")
+            return
+        
+        Ai = AIRender(ai).model
+
+        print(Ai.generate_prompt_linkedin(company, updates, output, payload, ai, template, api_key=api_key))
+        sys.exit()
+
+    async def company_list_cli(self, file_path: str, output: str, payload: str, ai: str, template: str, api_key: str = ""):
+        try:
+            with open(file_path, 'r') as file:
+                companies = file.readlines()
+        except Exception:
+            print(f"{Const.COLOR_ERROR}File not found{Const.RESET_ALL}")
+            return
+        clean_companies= []
+        for company in companies:
+            if '\n' in company:
+                company = company[:-1]
+            clean_companies.append(company)
+        profile_list = []
+        updates_list = []
+        for comp_id in clean_companies:
+            profile, updates = self._get_company(comp_id)
+            if profile is None:
+                print(f"{Const.COLOR_ERROR}Company {comp_id} not found{Const.RESET_ALL}")
+                profile_list.append(None)
+                updates_list.append(None)
+                continue
+            profile_list.append(profile)
+            updates_list.append(updates)
+
+        Ai = AIRender(ai).model
+
+        for profile, update in zip(profile_list, updates_list):
+            print(profile.split("\n")[0])
+            print(Ai.generate_prompt_linkedin(profile, update, output, payload, ai, template, api_key=api_key))
+
+    async def single_company(self, ai: str):
+        print("\n\nPlease enter the company ID of the company you would like to scrape:")
+        print("(the company ID is in the URL of the company's profile like this: https://www.linkedin.com/company/company-id/)")
+        company_id = input("\nCompany ID: ")
+        try:
+            company, updates = self._get_company(company_id)
+        except Exception:
+            print(f"{Const.COLOR_ERROR}Company not found{Const.RESET_ALL}")
+            return await self.single_company(ai)
+        generation_option = self._linkedin_generation_options()
+        payload, payload_text = self._payload_options()
+        template = self._template_options()
+
+        Ai = AIRender(ai).model
+
+        print(Ai.generate_prompt_linkedin(company, updates, generation_option, payload, ai, template, payload_text, api_key=""))
+
+    async def company_list(self, ai: str):
+        print("\n\nPlease enter the path to the file containing the list of companies you would like to scrape:")
+        file_path = input("\nFile path: ")
+        try:
+            with open(file_path, 'r') as file:
+                companies = file.readlines()
+        except Exception:
+            print(f"{Const.COLOR_ERROR}File not found{Const.RESET_ALL}")
+            return self.company_list(ai)
+        clean_company_ids = []
+        for company in companies:
+            if '\n' in company:
+                company = company[:-1]
+            clean_company_ids.append(company)
+        company_list = []
+        updates_list = []
+        for company_id in clean_company_ids:
+            company, updates = self._get_company(company_id)
+            if company is None:
+                print(f"{Const.COLOR_ERROR}Company {company_id} not found{Const.RESET_ALL}")
+                company_list.append(None)
+                updates_list.append(None)
+                continue
+            company_list.append(company)
+            updates_list.append(updates)
+        generation_option = self._linkedin_generation_options()
+        payload = self._payload_options()
+        template = self._template_options()
+
+        Ai = AIRender(ai).model
+
+        for (profile, posts) in zip(company_list, updates_list):
+            print(profile.split("\n")[0])
+            print(Ai.generate_prompt_linkedin(profile, posts, generation_option, payload, ai, template, api_key=""))
     # ! --------------------------------------------------------------------------------
     # ! PRIVATE
     # ! --------------------------------------------------------------------------------
 
-    def _get_user(self, link):
+    def _get_user(self, link: str):
         cookiejar = requests.cookies.RequestsCookieJar()
         li_at, jsessionid = self._load_cookies()
         cookiejar.set('li_at', li_at, domain='.linkedin.com', path='/')
@@ -244,7 +333,6 @@ class LinkedinService(SocialService):
 
         # Extract industry
         industry = profile_data.get('industryName', '')
-
         # Extract certifications
         certifications = []
         for cert in profile_data.get('certifications', []):
@@ -299,7 +387,7 @@ class LinkedinService(SocialService):
         payload_option = Helper.get_valid_input(len(Const.payload_options_list))
         if payload_option == 4:
             payload_option_text = input("\Please specify the type of payload: ")
-        return payload_option, payload_option_text
+        return payload_option, payload_option_text if payload_option_text else payload_option
     
     def _template_options(self):
         template_option = input("\n\nDo you want to use a template? (y/n) ")
@@ -322,3 +410,85 @@ class LinkedinService(SocialService):
             else:
                 return templates[template_name]
 
+    def _parse_company(self, company: dict):
+
+        name = company.get('name', '')
+        tagline = company.get('tagline', '')
+        description = company.get('description', '')
+
+        # Extract location
+        location = company.get('confirmedLocations', [])[0].get('geographicArea', '')
+
+        # Extract industry
+        industry = company.get('companyIndustries', [])
+
+        if len(industry) == 1:
+            industry = company.get('companyIndustries', [])[0].get('localizedName', '')
+        else:
+            result = []
+            for topic in industry:
+                topic_name = topic.get('localizedName', '')
+                result.append({
+                    topic_name
+                })
+            industry = result
+
+        return {
+            'name': name,
+            'tagline': tagline,
+            'description': description,
+            'location': location,
+            'industry': industry,
+        }
+
+    def _extract_post_content_company(self, scraped_data):
+        post_contents = []
+
+        # Iterate through each post in the scraped data
+        for actor in scraped_data:
+            if not actor['value']['com.linkedin.voyager.feed.render.UpdateV2']['commentary']['text']['text']: continue
+
+            used = actor['value']['com.linkedin.voyager.feed.render.UpdateV2']
+            # Navigate to the content of the post
+            commentary = used.get('commentary', {})
+            text_wrap = commentary.get('text', {})
+            text = text_wrap.get('text', '')
+
+            # Add the text content to the list if it exists
+            if text:
+                post_contents.append(text)
+
+        return post_contents
+
+    def _company_readable(self, company: dict, updates: list):
+        name = company['name']
+        tagline = company['tagline']
+        desc = company['description']
+
+        name = f"{name}\n{tagline}\n{desc}"
+
+        # Formatting location
+        location = company['location']
+        location_text = f"Location: {location}\n"
+
+        # Formatting industry
+        industry = company['industry']
+        industry_text = f"Industry: {industry}\n"
+
+        posts = updates
+        posts_text = "Posts by the company:\n"
+        for i, content in enumerate(posts, 1):
+            posts_text += f"Post {i}: \n{content}\n----------------\n"
+
+        return f"Name: {name}\n{location_text}\n{industry_text}\n", posts_text
+
+    def _get_company(self, link: str):
+        cookiejar = requests.cookies.RequestsCookieJar()
+        li_at, jsessionid = self._load_cookies()
+        cookiejar.set('li_at', li_at, domain='.linkedin.com', path='/')
+        cookiejar.set('JSESSIONID', jsessionid, domain='.linkedin.com', path='/')
+        api = Linkedin('', '', cookies=cookiejar)
+        profile = api.get_company(link)
+        posts = api.get_company_updates(link, None, 5)
+
+        return self._company_readable(self._parse_company(profile), self._extract_post_content_company(posts))
