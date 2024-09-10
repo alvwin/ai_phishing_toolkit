@@ -26,3 +26,9 @@ class Helper:
             print(f"{Const.COLOR_ERROR}Invalid option{Const.RESET_ALL}")
             input_value = Helper.get_valid_input(size)
         return input_value
+    
+    @staticmethod
+    def selection_options(options: list):
+        print("\n\nPlease select an option:")
+        Helper.print_options(options)
+        return Helper.get_valid_input(len(options))
