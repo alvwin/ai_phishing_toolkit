@@ -6,7 +6,7 @@ import logging
 from SocialService.SocialRender import SocialRender
 from Util.Const import Const
 from Util.Helper import Helper
-from Console.Logging import LoggingConfig
+from Console.Logging import setup_logging
 
 # Define functions
 async def main(args=None):
@@ -100,14 +100,12 @@ if __name__ == "__main__":
       parser.add_argument('-api_key', help='API key for the AI service')
       args = parser.parse_args()
 
-      logging_config = LoggingConfig()
-      logger = logging.getLogger(__name__)
+      logging_config = setup_logging(name=__name__)
 
       if not any(vars(args).values()):
             asyncio.run(main())
       else:
             if(args.platform and args.ai and args.output and args.payload and (args.list or args.uname or args.company or args.list_company)):
-                  print(args)
                   asyncio.run(main(args))
             else:
                   parser.print_help()
