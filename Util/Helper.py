@@ -29,6 +29,8 @@ class Helper:
     
     @staticmethod
     def selection_options(options: list):
+        if not options:
+            raise ValueError("Options list cannot be empty")
         print("\n\nPlease select an option:")
         Helper.print_options(options)
         return Helper.get_valid_input(len(options))
