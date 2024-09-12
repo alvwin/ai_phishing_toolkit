@@ -1,10 +1,12 @@
 import argparse
 import json
 import asyncio
+import logging
 
 from SocialService.SocialRender import SocialRender
 from Util.Const import Const
 from Util.Helper import Helper
+from Console.Logging import setup_logging
 
 # Define functions
 async def main(args=None):
@@ -46,18 +48,18 @@ async def main(args=None):
                   print(f"{Const.COLOR_ERROR}Invalid option{Const.RESET_ALL}")
             return
 
-      ai_option = Const.ai_options_list[selection_options(Const.ai_options_list)-1]
+      ai_option = Const.ai_options_list[Helper.selection_options(Const.ai_options_list)-1]
 
-      platform_option = selection_options(Const.platform_options_list)
+      platform_option = Helper.selection_options(Const.platform_options_list)
       account_type = None
       if platform_option == 2:
-            account_type = selection_options(Const.account_type_options_list)
+            account_type = Helper.selection_options(Const.account_type_options_list)
            
       if account_type == 1: 
-            mult_option = selection_options(Const.user_options_list)
+            mult_option = Helper.selection_options(Const.user_options_list)
       elif account_type == 2:
-            mult_option = selection_options(Const.company_options_list)
-      else: mult_option = selection_options(Const.user_options_list)
+            mult_option = Helper.selection_options(Const.company_options_list)
+      else: mult_option = Helper.selection_options(Const.user_options_list)
             
       social = SocialRender(Const.platform_options_list[platform_option - 1]).service
 
@@ -72,11 +74,6 @@ async def main(args=None):
             await social.single_user(ai_option)
       elif(mult_option == 2):
             await social.user_list(ai_option)
-
-def selection_options(options: list):
-      print("\n\nPlease select an option:")
-      Helper.print_options(options)
-      return Helper.get_valid_input(len(options))
 
 def print_logo():
       print("\n\n"
@@ -102,11 +99,13 @@ if __name__ == "__main__":
       parser.add_argument('-template', help='Specify a template to use', default=False)
       parser.add_argument('-api_key', help='API key for the AI service')
       args = parser.parse_args()
+
+      logging_config = setup_logging(name=__name__)
+
       if not any(vars(args).values()):
             asyncio.run(main())
       else:
             if(args.platform and args.ai and args.output and args.payload and (args.list or args.uname or args.company or args.list_company)):
-                  print(args)
                   asyncio.run(main(args))
             else:
                   parser.print_help()
